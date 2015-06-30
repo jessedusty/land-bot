@@ -1,42 +1,58 @@
-    #include <Wire.h>
-    #include <Adafruit_Sensor.h>
-    #include <Adafruit_BNO055.h>
-    #include <utility/imumaths.h>
-      
-    Adafruit_BNO055 bno = Adafruit_BNO055(55);
-     
-    void setup(void) 
-    {
-      Serial.begin(115200);
-      Serial.println("Orientation Sensor Test"); Serial.println("");
-      
-      /* Initialise the sensor */
-      if(!bno.begin())
-      {
-        /* There was a problem detecting the BNO055 ... check your connections */
-        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-        while(1);
-      }
-      
-      delay(1000);
-        
-      bno.setExtCrystalUse(true);
-    }
-     
-    void loop(void) 
-    {
-      /* Get a new sensor event */ 
-      sensors_event_t event; 
-      bno.getEvent(&event);
-      
-      /* Display the floating point data */
-      Serial.print("X: ");
-      Serial.print(event.orientation.x, 4);
-      Serial.print("\tY: ");
-      Serial.print(event.orientation.y, 4);
-      Serial.print("\tZ: ");
-      Serial.print(event.orientation.z, 4);
-      Serial.println("");
-      
-      delay(33);
-    }
+/*
+
+XBee Serial Communication Test
+
+*/
+#include <Servo.h> 
+
+Servo leftMotor;
+Servo rightMotor; 
+
+int leftSpeed; 
+int rightSpeed; 
+
+void setup () {
+  Serial.begin(115200); 
+  Serial1.begin(115200);
+  
+  Serial.println("Robot Debug");
+  Serial1.println("Robot Ready...");
+  
+  leftMotor.attach(5);
+  rightMotor.attach(6);
+  
+  leftSpeed = 0;
+  rightSpeed = 0;
+}
+
+void moveMotors() {
+ leftMotor.write(map(leftSpeed, -100, 100, 0, 180));
+ rightMotor.write(map(rightSpeed, -100, 100, 0, 180));
+}
+
+void loop () {
+  char character = Serial1.read(); 
+  //if (character != -1) Serial.write(character);
+  if (character == 'S') {
+    Serial1.read();
+    Serial.print("Left Speed : ");
+    leftSpeed = Serial1.parseInt();
+    Serial.print(leftSpeed);
+    Serial1.read();
+    Serial.print("      Right Speed : ");
+    rightSpeed = Serial1.parseInt(); 
+    Serial.println(rightSpeed);
+    Serial1.read();
+    
+    moveMotors();
+  }
+  
+  if (character == ';') {
+    //Serial.print("   end character\n\r");
+    Serial1.write("\n\r"); 
+  }
+  
+  
+}
+
+
