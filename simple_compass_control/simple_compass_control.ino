@@ -40,14 +40,14 @@ boolean compassEnabled;
 
 void setup(void) 
 {
-  Serial.begin(115200);
-  Serial.println("Orientation Sensor Raw Data Test"); Serial.println("");
+  Serial1.begin(115200);
+  Serial1.println("Orientation Sensor Raw Data Test"); Serial1.println("");
   
   /* Initialise the sensor */
   if(!bno.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    Serial1.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
   
@@ -55,10 +55,10 @@ void setup(void)
     
   /* Display the current temperature */
   int8_t temp = bno.getTemp();
-  Serial.print("Current Temperature: ");
-  Serial.print(temp);
-  Serial.println(" C");
-  Serial.println("");
+  Serial1.print("Current Temperature: ");
+  Serial1.print(temp);
+  Serial1.println(" C");
+  Serial1.println("");
   
   bno.setExtCrystalUse(true);
   
@@ -72,7 +72,7 @@ void initMotors() {
   leftSpeed = 0;
   rightSpeed = 0;
   
-  
+  compassEnabled = false;
 }
 
 void correctForMovement(int heading) {
@@ -136,39 +136,51 @@ void loop(void)
   imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
   
   /* Display the floating point data */
-  Serial.print("X: ");
-  Serial.print(euler.x());
-  Serial.print(" Y: ");
-  Serial.print(euler.y());
-  Serial.print(" Z: ");
-  Serial.print(euler.z());
+  Serial1.print("X: ");
+  Serial1.print(euler.x());
+  Serial1.print(" Y: ");
+  Serial1.print(euler.y());
+  Serial1.print(" Z: ");
+  Serial1.print(euler.z());
   
+  char command = Serial1.read(); 
+  
+  if (command == 101) compassEnabled = true; 
+  if (command == 100) compassEnabled = false;
 
-  correctForMovement(euler.x()); 
+  if (compassEnabled) { 
+    correctForMovement(euler.x());  
+  } else {
+    leftSpeed = 0;
+    rightSpeed = 0;
+    moveMotors();
+  }
   
-  Serial.print(" Error: "); 
-  Serial.print(error);
+  
+  Serial1.print(" Error: "); 
+  Serial1.print(error);
 
-  Serial.print(" Left: ");
-  Serial.print(leftSpeed);
-  Serial.print(" Right: ");
-  Serial.print(rightSpeed);
+  Serial1.print(" Left: ");
+  Serial1.print(leftSpeed);
+  Serial1.print(" Right: ");
+  Serial1.print(rightSpeed);
   
-  Serial.println(""); 
+  Serial1.println(""); 
 
   /*
   // Quaternion data
   imu::Quaternion quat = bno.getQuat();
-  Serial.print("qW: ");
-  Serial.print(quat.w(), 4);
-  Serial.print(" qX: ");
-  Serial.print(quat.y(), 4);
-  Serial.print(" qY: ");
-  Serial.print(quat.x(), 4);
-  Serial.print(" qZ: ");
-  Serial.print(quat.z(), 4);
-  Serial.println("");
+  Serial1.print("qW: ");
+  Serial1.print(quat.w(), 4);
+  Serial1.print(" qX: ");
+  Serial1.print(quat.y(), 4);
+  Serial1.print(" qY: ");
+  Serial1.print(quat.x(), 4);
+  Serial1.print(" qZ: ");
+  Serial1.print(quat.z(), 4);
+  Serial1.println("");
   */
   
   delay(BNO055_SAMPLERATE_DELAY_MS);
 }
+
