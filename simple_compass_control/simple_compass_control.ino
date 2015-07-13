@@ -69,6 +69,7 @@ void loop(void)
   euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
   
   navigationAlgorithm();
+  
   debugPrint();
   
   
