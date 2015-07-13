@@ -8,7 +8,7 @@ void correctForMovement(int heading) {
   /* This is the "cheap" navigation method that can result in osilations,
      it is a quick test */
      
-  error = degreesError * 1;
+  error = degreesError * 5;
 
   moveMotorsWithError();
 }

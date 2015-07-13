@@ -1,17 +1,12 @@
 
 void moveMotorsWithError() {
- 
-  leftSpeed = 100;
-  rightSpeed = 100;
+  
+  leftSpeed = 0;
+  rightSpeed = 0;
   
   if (compassEnabled) { 
-    if (error > 0) {
-      leftSpeed = 100 - abs(error);
-      rightSpeed = 100;
-    } else { 
-      leftSpeed = 100;
-      rightSpeed = 100 - abs(error);
-    }
+    leftSpeed = error * -1;
+    rightSpeed = error;
   } else {
     leftSpeed = 0; 
     rightSpeed = 0; 
@@ -21,7 +16,7 @@ void moveMotorsWithError() {
 }
 int normalizedMotorVal(int input) {
   if (input > 100) input = 100; 
-  if (input < 0) input = 0;
+  if (input < -100) input = -100;
   return input;
 }
 

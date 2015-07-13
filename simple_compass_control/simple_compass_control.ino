@@ -2,7 +2,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-
+ 
 
 
 /* Set the delay between fresh samples */
